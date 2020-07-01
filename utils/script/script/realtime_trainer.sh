@@ -47,21 +47,6 @@ if [[ $? -ne 0 ]]; then
 fi
 
 date_of_test_data=$(date +%Y%m%d)
-# NOTE(bing.wb) 本脚本支持外部传参的方式
-# script.sh {train_date}
-# example train.sh 20190101
-if [[ $# == 1 ]] || [[ $# == 2 ]]; then
-  date_of_test_data=$1
-  slink_logging_dir="${LOG_DIR}/real_${date_of_test_data}"
-  if [[ -L $slink_logging_dir ]]; then
-    rm $slink_logging_dir
-  fi
-  ln -s $local_logging_dir $slink_logging_dir
-  mq_rw_client_bin=${SCRIPT_DIR}/../packages/els_train.realtime_model/bin/mq_rw_client
-  if [[ -f "${mq_rw_client_bin}" ]]; then
-    chmod +x ${mq_rw_client_bin}
-  fi
-fi
 
 # check log file #
 SCRIPT_LOG="${local_logging_dir}/${SCRIPT_NAME}.log"

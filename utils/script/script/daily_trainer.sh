@@ -149,25 +149,6 @@ end_date_of_training_data=$(date +%Y%m%d -d "1 day ago")
 date_of_test_data=$(date +%Y%m%d)
 hour_of_test_data=${conf_test_data_hour}
 
-# NOTE(bing.wb) 本脚本支持外部传参的方式
-# script.sh {train_date}
-# example train.sh 20190101
-if [[ $# == 1 ]] || [[ $# == 2 ]]; then
-  date_of_test_data=$1
-  end_date_of_training_data=$(date -d"${date_of_test_data} -1 days" +"%Y%m%d")
-  # NOTE(bing.wb) 由于训练脚本支持自定义时间传入，此处需保证传入的时间大于最后一个模型生成的时间
-  is_valid=$(CheckTrainDateValid $end_date_of_training_data ${conf_hdfs_path_of_output_model}/donefile)
-  if [[ $is_valid != "1" ]]; then
-    message="$(date +"%Y/%m/%d %H:%M:%S")][${SCRIPT_NAME}:$LINENO][FATAL] train date check invalid."
-    echo ${message} | tee -a ${SCRIPT_LOG}
-    exit 1
-  fi
-  slink_logging_dir="${LOG_DIR}/daily_${date_of_test_data}"
-  if [[ -L $slink_logging_dir ]]; then
-    rm $slink_logging_dir
-  fi
-  ln -s $local_logging_dir $slink_logging_dir
-fi
 hdfs_dst_dir=""
 if [[ ${conf_auto_deploy_hdfs_path_of_run_log} != "" ]]; then
   hdfs_dst_dir=${conf_auto_deploy_hdfs_path_of_run_log}"/"${date_of_test_data}
